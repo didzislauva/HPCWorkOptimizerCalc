@@ -65,9 +65,8 @@ A bar chart below visualises **Optimized vs. Equal Distribution** and shows th
 3. **Enumerate every possible split** of those chunks across *m* machines, respecting  
    *zero‑chunk* and wait‑time constraints.  
 4. For each split, compute per‑machine completion times  
-   \[
-   T_i = \frac{\text{chunks}_i}{N}\;\frac{T_{\text{base}}}{\text{speed}_i}
-   \]
+![Equation](https://latex.codecogs.com/svg.image?T_i%20=%20\frac{\text{chunks}_i}{N}%20\cdot%20\frac{T_{\text{base}}}{\text{speed}_i})
+
 5. Track the split with the smallest *wait time* (max – min).  
 6. **Stop early** as soon as a split beats `maxWaitTime`.
 
@@ -117,24 +116,8 @@ No frameworks, no build tools—ideal for quick audits or embedding in intranet 
 
 ---
 
-## 🏗️ Integrating elsewhere
-
-* **Headless** use: extract `calculateOptimalSplit()` into your own JS/TS project.  
-* **CLI**: run the same algorithm in Node ≥ 18:
-  ```js
-  import { calculateOptimalSplit } from './assets/js/script.js';
-  // TODO: wrap in a CLI helper; PRs welcome!
-  ```
-* **Python** users can call the web‑app programmatically with Selenium or simply
-  shell‑out the numbers and parse the JSON it prints in *debug‑mode*.
-
----
 
 ## 🤝 Contributing
-
-1. Fork → feature branch (`feat/xyz`) → Pull Request.
-2. For algorithm tweaks, **include a failing unit test** first.
-3. Run `npm run lint` and make sure Node‑based tests pass (`npm test`).
 
 Big improvements welcome—especially on:
 * Smarter heuristics to shrink the search space
@@ -145,9 +128,9 @@ Big improvements welcome—especially on:
 
 ## 📄 License
 
-[MIT](LICENSE) © 2025 Your Name.  
+[MIT](LICENSE) © 2025 Didzis Lauva.  
 Free to use, modify, and distribute—no warranty.
 
 ---
 
-*Made with ❤️ in Riga.*
+*Made with ❤️ in Latvia.*
