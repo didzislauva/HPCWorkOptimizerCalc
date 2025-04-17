@@ -4,7 +4,7 @@
 
 
 ---
-
+Available online here - https://didzislauva.github.io/HPCWorkOptimizerCalc/
 ## ✨ Why you might need this
 
 When you run the **same** workload on machines that **aren’t the same speed**, splitting the work 1 : 1 : 1 wastes time—fast machines finish early and wait for slow ones.  
