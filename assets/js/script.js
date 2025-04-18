@@ -362,7 +362,9 @@ function generateAllDistributions(totalChunks, numMachines) {
 function calculateOptimalSplit() {
   const baseTime = parseFloat(document.getElementById("totalTime").value);
   const maxChunks = parseInt(document.getElementById("maxChunks").value);
-  const maxWaitTime = parseFloat(document.getElementById("maxWaitTime").value);
+  const maxWaitPercent = parseFloat(document.getElementById("maxWaitPercent").value);
+  const maxWaitTime = baseTime * (maxWaitPercent / 100);
+  
   const enforceNonZero = document.getElementById("enforceNonZero").checked;
   const debugMode = document.getElementById("debugMode").checked;
   
@@ -489,6 +491,26 @@ function calculateOptimalSplit() {
   // Start searching from a reasonable starting point
   setTimeout(() => {
     // Calculate a good starting point for chunks based on machine speeds
+	
+	const useFastModel = maxWaitPercent < 1;
+	
+	if (useFastModel) {
+    debugInfo += `\nWait time threshold (${maxWaitPercent}%) is very tight. Using fallback model...\n`;
+    document.getElementById("debugInfo").textContent = debugInfo;
+    const best = useFallbackModel(baseTime, speeds, normalizedSpeeds, machineNames, resultBox, debugMode);
+
+    if (!best) {
+      resultBox.value = `No optimal solution found with fallback algorithm.`;
+      document.getElementById("visualization").innerHTML = "";
+      return;
+    }
+
+    resultBox.value = generateResultOutput(best, machineNames, normalizedSpeeds, baseTime);
+    createVisualization(best, machineNames, normalizedSpeeds);
+    return;
+  }
+	
+	
     let minChunksToConsider = speeds.length;
     
     // For the example case (0, 0, 50) we want at least enough chunks to proportionally distribute
@@ -496,6 +518,8 @@ function calculateOptimalSplit() {
     const speedSum = normalizedSpeeds.reduce((sum, speed) => sum + speed, 0);
     const lcmValue = calculateLeastCommonMultiple(normalizedSpeeds.map(speed => Math.round(speed * 100)));
     minChunksToConsider = Math.max(minChunksToConsider, Math.ceil(lcmValue / 100));
+	
+	// minChunksToConsider = speeds.length;
     
     if (enforceNonZero) {
       minChunksToConsider = Math.max(minChunksToConsider, speeds.length);
@@ -677,4 +701,42 @@ function createVisualization(result, machineNames, normalizedSpeeds) {
     </p>
   `;
   visContainer.appendChild(efficiencyInfo);
+}
+
+function generateResultOutput(best, machineNames, normalizedSpeeds, baseTime) {
+  let output = `OPTIMAL WORK DISTRIBUTION\n`;
+  output += `=========================\n\n`;
+  output += `Total chunks: ${best.totalChunks}\n`;
+  output += `Maximum completion time: ${Math.max(...best.times.filter((t, i) => best.distribution[i] > 0)).toFixed(2)} minutes\n`;
+  output += `Wait time (difference between fastest and slowest): ${best.waitTime.toFixed(2)} minutes\n\n`;
+
+  output += `DISTRIBUTION SUMMARY\n`;
+  output += `===================\n`;
+  best.distribution.forEach((chunks, i) => {
+    const percentage = (chunks / best.totalChunks * 100).toFixed(1);
+    output += `${machineNames[i]}: ${chunks} chunks (${percentage}% of total work)\n`;
+  });
+
+  output += `\nDETAILED RESULTS\n`;
+  output += `===============\n`;
+  best.distribution.forEach((chunks, i) => {
+    output += `${machineNames[i]}:\n`;
+    output += `  Speed: ${normalizedSpeeds[i].toFixed(2)}x base machine\n`;
+    output += `  Chunks assigned: ${chunks} (${best.percentages[i]} of total work)\n`;
+    if (chunks > 0) {
+      output += `  Estimated completion time: ${best.times[i].toFixed(2)} minutes\n`;
+      const speedup = baseTime / best.times[i];
+      output += `  Speedup compared to base machine alone: ${speedup.toFixed(2)}x\n`;
+    } else {
+      output += `  No work assigned\n`;
+    }
+    output += `\n`;
+  });
+
+  const zeroWorkMachines = best.distribution.filter(chunks => chunks === 0).length;
+  if (zeroWorkMachines > 0) {
+    output += `NOTE: ${zeroWorkMachines} machine(s) were assigned no work. This is mathematically optimal but you can\nforce all machines to get work by enabling \"Ensure all machines get work\" in Advanced Settings.\n`;
+  }
+
+  return output;
 }
