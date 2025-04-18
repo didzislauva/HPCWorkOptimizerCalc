@@ -1,0 +1,235 @@
+:root {
+    --primary: #3498db;
+    --primary-dark: #2980b9;
+    --secondary: #2ecc71;
+    --background: #f8f9fa;
+    --text: #333;
+    --border: #ddd;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  
+  .container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+  
+  h1, h2, h3 {
+    color: var(--primary-dark);
+  }
+  
+  .info-section {
+    margin-bottom: 30px;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+  }
+  
+  .formula {
+    background-color: #f1f8ff;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    margin: 10px 0;
+  }
+  
+  .input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  input[type="number"] {
+    width: 100px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  textarea {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
+  }
+  
+  .debug-info {
+    margin-top: 20px;
+    background-color: #f9f2f4;
+    color: #c7254e;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    display: none;
+  }
+  
+  .tab {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background-color: #f1f1f1;
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 16px;
+    transition: 0.3s;
+    color: var(--text);
+  }
+  
+  .tab button:hover {
+    background-color: #ddd;
+  }
+  
+  .tab button.active {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .tabcontent {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    animation: fadeEffect 1s;
+  }
+  
+  @keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  
+  .visualization {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .machine-bar {
+    background-color: #e0e0e0;
+    height: 30px;
+    border-radius: 4px;
+    position: relative;
+  }
+  
+  .machine-progress {
+    background-color: var(--secondary);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  summary {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .example-section {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+  }
+  
+  .debug-toggle {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #777;
+    cursor: pointer;
+    text-align: right;
+  }
+  
+  .advanced-settings {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .advanced-settings h3 {
+    margin-top: 0;
+  }
+  
+  input:disabled {
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+  }

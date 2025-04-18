@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HPC Work Split Optimizer</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    label { display: block; margin-top: 10px; }
+    input[type="number"] { width: 80px; }
+    textarea { width: 100%; height: 200px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>HPC Work Split Optimizer</h2>
+  <p>Enter relative performance of machines (% compared to the first one):</p>
+  <div id="machineInputs"></div>
+  <label>Total time for machine 1 (in minutes): <input type="number" id="totalTime" value="600"></label>
+  <button onclick="calculateOptimalSplit()">Calculate</button>
+
+  <h3>Result</h3>
+  <textarea id="result" readonly></textarea>
+
+  <script>
+    // fallback model
+    const machineCount = 10;
+    const inputContainer = document.getElementById("machineInputs");
+
+    for (let i = 0; i < machineCount; i++) {
+      const label = document.createElement("label");
+      label.innerHTML = `Machine ${i + 1}: <input type="number" id="machine${i}" value="${i === 0 ? 0 : ''}" placeholder="%">`;
+      inputContainer.appendChild(label);
+    }
+
+    function calculateOptimalSplit() {
+      const baseTime = parseFloat(document.getElementById("totalTime").value);
+      let speeds = [];
+
+      for (let i = 0; i < machineCount; i++) {
+        const val = parseFloat(document.getElementById(`machine${i}`).value);
+        if (isNaN(val) || val <= -100) continue; // exclude machine
+        const relativeSpeed = 1 + (val / 100);
+        speeds.push(relativeSpeed);
+      }
+
+      const baseSpeed = speeds[0];
+      const normalizedSpeeds = speeds.map(s => s / baseSpeed);
+
+      const maxChunks = 200;
+      let best = null;
+
+      for (let totalChunks = speeds.length; totalChunks <= maxChunks; totalChunks++) {
+        let bestDist = null;
+
+        // Generate all integer combinations of chunk assignments that sum to totalChunks
+        function generateAssignments(index = 0, current = [], remaining = totalChunks) {
+          if (index === normalizedSpeeds.length - 1) {
+            current[index] = remaining;
+            evaluate(current);
+            return;
+          }
+
+          for (let i = 0; i <= remaining; i++) {
+            current[index] = i;
+            generateAssignments(index + 1, current.slice(), remaining - i);
+          }
+        }
+
+        function evaluate(assignment) {
+          const times = assignment.map((chunks, i) => {
+            const workShare = chunks / totalChunks;
+            return workShare * baseTime / normalizedSpeeds[i];
+          });
+
+          const maxTime = Math.max(...times);
+          const waitTime = Math.max(...times.map(t => maxTime - t));
+
+          if (waitTime <= 1) {
+            best = {
+              totalChunks,
+              chunks: assignment.slice(),
+              times,
+              waitTime
+            };
+          }
+        }
+
+        generateAssignments();
+        if (best) break;
+      }
+
+      const resultBox = document.getElementById("result");
+      if (!best) {
+        resultBox.value = "No solution found within 200 chunks.";
+        return;
+      }
+
+      let output = `Total chunks: ${best.totalChunks}\nMax wait time: ${best.waitTime.toFixed(2)} minutes\n\n`;
+      best.chunks.forEach((c, i) => {
+        output += `Machine ${i + 1}:\n  Chunks: ${c}\n  Time: ${best.times[i].toFixed(2)} minutes\n\n`;
+      });
+
+      resultBox.value = output;
+    }
+  </script>
+</body>
+</html>
